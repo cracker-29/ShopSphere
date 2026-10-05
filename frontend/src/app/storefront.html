@@ -1,0 +1,505 @@
+<!-- Announcement Bar -->
+  <div class="announcement">
+    ✨ Welcome to ShopSphere — Free shipping on orders above ₹999!
+  </div>
+
+  <!-- Navbar -->
+  <header class="navbar">
+    <a class="brand" href="#">
+      <span class="brand-icon">S</span>
+      ShopSphere<span class="brand-dot">.</span>
+    </a>
+
+    <nav class="nav-links">
+      <a href="#">Home</a>
+      <a href="#products">Shop</a>
+      <a href="#categories">Categories</a>
+      <a href="#footer">Contact</a>
+    </nav>
+
+    <div class="nav-actions">
+      <div class="search-box">
+        <span>⌕</span>
+        <input
+          type="text"
+          placeholder="Search products..."
+          [value]="searchTerm"
+          (input)="onSearch($any($event.target).value)"
+        />
+      </div>
+
+      @if (!isLoggedIn) {
+        <button
+          class="auth-nav-button"
+          (click)="openAuth('login')"
+        >
+          Login
+        </button>
+      } @else {
+        <div class="user-menu">
+          <span>Hi, {{ userName }}</span>
+          <button (click)="logout()">Logout</button>
+        </div>
+      }
+
+      <button class="cart-button" (click)="toggleCart()">
+        <span class="cart-icon">🛒</span>
+        <span>Cart</span>
+        <span class="cart-count">{{ cartCount }}</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <span class="eyebrow">YOUR STYLE, YOUR WORLD</span>
+
+      <h1>
+        Discover Your<br />
+        <span>Perfect Style.</span>
+      </h1>
+
+      <p>
+        Explore a world of amazing products, modern fashion
+        and everyday essentials — all in one place.
+      </p>
+
+      <button class="primary-button" (click)="scrollToProducts()">
+        Explore Collection <span>→</span>
+      </button>
+
+      <div class="hero-stats">
+        <div>
+          <strong>10K+</strong>
+          <span>Happy Customers</span>
+        </div>
+
+        <div>
+          <strong>500+</strong>
+          <span>Products</span>
+        </div>
+
+        <div>
+          <strong>4.8/5</strong>
+          <span>Customer Rating</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-image">
+      <img
+        src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1100&q=85"
+        alt="Modern shopping store"
+      />
+
+      <div class="floating-card">
+        <span class="floating-icon">✦</span>
+        <div>
+          <strong>Fresh Arrivals</strong>
+          <p>New season collection</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section class="features">
+    <div class="feature">
+      <span>🚚</span>
+      <div>
+        <strong>Free Shipping</strong>
+        <p>On orders above ₹999</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <span>🔒</span>
+      <div>
+        <strong>Secure Payment</strong>
+        <p>100% secure checkout</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <span>↩</span>
+      <div>
+        <strong>Easy Returns</strong>
+        <p>7-day return policy</p>
+      </div>
+    </div>
+
+    <div class="feature">
+      <span>💬</span>
+      <div>
+        <strong>24/7 Support</strong>
+        <p>We're here to help</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section class="section categories-section" id="categories">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">EXPLORE OUR STORE</span>
+        <h2>Shop by Category</h2>
+      </div>
+
+      <p>Find everything you need, all in one place.</p>
+    </div>
+
+    <div class="category-list">
+      @for (category of categories; track category.name) {
+        <button
+          class="category-button"
+          [class.active]="selectedCategory === category.name"
+          (click)="selectCategory(category.name)"
+        >
+          <span>{{ category.icon }}</span>
+          {{ category.name }}
+        </button>
+      }
+    </div>
+  </section>
+
+  <!-- Products -->
+  <section class="section products-section" id="products">
+    <div class="section-heading">
+      <div>
+        <span class="eyebrow">HANDPICKED FOR YOU</span>
+        <h2>Featured Products</h2>
+      </div>
+
+      <span class="product-total">
+        {{ filteredProducts.length }} products
+      </span>
+    </div>
+
+    <div class="product-grid">
+      @for (product of filteredProducts; track product.id) {
+        <article class="product-card">
+          <div class="product-image">
+            <img [src]="product.image" [alt]="product.name" />
+
+            @if (product.badge) {
+              <span class="product-badge">
+                {{ product.badge }}
+              </span>
+            }
+
+            <button
+              class="quick-add"
+              (click)="addToCart(product)"
+              aria-label="Add to cart"
+            >
+              + Add to Cart
+            </button>
+          </div>
+
+          <div class="product-info">
+            <span class="product-category">
+              {{ product.category }}
+            </span>
+
+            <h3>{{ product.name }}</h3>
+
+            <div class="rating">
+              <span>★</span>
+              {{ product.rating }}
+              <span class="rating-label">(Verified)</span>
+            </div>
+
+            <div class="product-price">
+              <strong>₹{{ product.price }}</strong>
+              <del>₹{{ product.oldPrice }}</del>
+            </div>
+
+            <button
+              class="add-button"
+              (click)="addToCart(product)"
+            >
+              Add to Cart <span>+</span>
+            </button>
+          </div>
+        </article>
+      } @empty {
+        <div class="empty-products">
+          <span>🔎</span>
+          <h3>No products found</h3>
+          <p>Try another search or select a different category.</p>
+
+          <button
+            class="primary-button"
+            (click)="selectCategory('All'); onSearch('')"
+          >
+            Show All Products
+          </button>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- Promotional Banner -->
+  <section class="promo-section">
+    <div>
+      <span class="eyebrow">LIMITED TIME OFFER</span>
+
+      <h2>
+        Make Every Purchase<br />
+        A Little More Special.
+      </h2>
+
+      <p>Discover your favorites and enjoy amazing deals.</p>
+
+      <button class="light-button" (click)="scrollToProducts()">
+        Shop Now →
+      </button>
+    </div>
+
+    <div class="promo-decoration">S</div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter">
+    <div>
+      <span class="eyebrow">STAY IN THE LOOP</span>
+      <h2>Get the latest updates.</h2>
+      <p>Discover new arrivals, special offers and more.</p>
+    </div>
+
+    <div class="newsletter-form">
+      <input type="email" placeholder="Enter your email address" />
+      <button type="button">Subscribe →</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer" id="footer">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <a class="brand" href="#">
+          <span class="brand-icon">S</span>
+          ShopSphere<span class="brand-dot">.</span>
+        </a>
+
+        <p>
+          Your destination for quality products,
+          modern style and everyday essentials.
+        </p>
+      </div>
+
+      <div>
+        <h4>Quick Links</h4>
+        <a href="#">Home</a>
+        <a href="#products">Shop</a>
+        <a href="#categories">Categories</a>
+      </div>
+
+      <div>
+        <h4>Customer Care</h4>
+        <a href="#footer">Contact Us</a>
+        <a href="#footer">Shipping Policy</a>
+        <a href="#footer">Return Policy</a>
+      </div>
+
+      <div>
+        <h4>Contact</h4>
+        <p>Email: support@shopsphere.com</p>
+        <p>Phone: +91 98765 43210</p>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>© 2026 ShopSphere. All rights reserved.</p>
+      <p>Designed with ♥ for your shopping experience.</p>
+    </div>
+  </footer>
+
+  <!-- Cart Overlay -->
+  @if (cartOpen) {
+    <div class="cart-overlay" (click)="toggleCart()">
+      <aside
+        class="cart-drawer"
+        (click)="$event.stopPropagation()"
+      >
+        <div class="cart-header">
+          <div>
+            <h2>Your Cart</h2>
+            <p>{{ cartCount }} items in your bag</p>
+          </div>
+
+          <button class="close-button" (click)="toggleCart()">
+            ×
+          </button>
+        </div>
+
+        <div class="cart-items">
+          @for (item of cartItems; track $index) {
+            <div class="cart-item">
+              <img [src]="item.image" [alt]="item.name" />
+
+              <div class="cart-item-info">
+                <strong>{{ item.name }}</strong>
+                <span>₹{{ item.price }}</span>
+
+                <button (click)="removeFromCart($index)">
+                  Remove
+                </button>
+              </div>
+            </div>
+          } @empty {
+            <div class="empty-cart">
+              <span>🛒</span>
+              <h3>Your cart is empty</h3>
+              <p>Add something you love!</p>
+            </div>
+          }
+        </div>
+
+        <div class="cart-footer">
+          <div class="cart-total">
+            <span>Total</span>
+            <strong>₹{{ cartTotal }}</strong>
+          </div>
+
+          <button
+            class="primary-button checkout-button"
+            [disabled]="cartCount === 0"
+          >
+            Proceed to Checkout →
+          </button>
+
+          <p class="demo-note">
+            Demo checkout — payment integration will be added later.
+          </p>
+        </div>
+      </aside>
+    </div>
+  }
+
+  <!-- Toast Message -->
+  @if (toastMessage) {
+    <div class="toast-message">
+      <span>✓</span>
+      {{ toastMessage }}
+    </div>
+  }
+
+  <!-- Login and Register Modal -->
+  @if (showAuth) {
+    <div class="auth-overlay" (click)="closeAuth()">
+      <div
+        class="auth-modal"
+        (click)="$event.stopPropagation()"
+      >
+        <button class="auth-close" (click)="closeAuth()">
+          ×
+        </button>
+
+        <div class="auth-logo">
+          <span class="brand-icon">S</span>
+        </div>
+
+        <span class="eyebrow">WELCOME TO SHOPSPHERE</span>
+
+        @if (authMode === 'login') {
+          <h2>Welcome Back!</h2>
+          <p class="auth-description">
+            Login to continue your shopping journey.
+          </p>
+        } @else {
+          <h2>Create Account</h2>
+          <p class="auth-description">
+            Join ShopSphere and discover amazing products.
+          </p>
+        }
+
+        <form (ngSubmit)="submitAuth()">
+          @if (authMode === 'register') {
+            <label for="authName">Full Name</label>
+
+            <input
+              id="authName"
+              type="text"
+              name="authName"
+              [(ngModel)]="authName"
+              placeholder="Enter your full name"
+              required
+            />
+          }
+
+          <label for="authEmail">Email Address</label>
+
+          <input
+            id="authEmail"
+            type="email"
+            name="authEmail"
+            [(ngModel)]="authEmail"
+            placeholder="Enter your email"
+            required
+          />
+
+          <label for="authPassword">Password</label>
+
+          <div class="password-field">
+            <input
+              id="authPassword"
+              [type]="showPassword ? 'text' : 'password'"
+              name="authPassword"
+              [(ngModel)]="authPassword"
+              placeholder="Enter your password"
+              minlength="6"
+              required
+            />
+
+            <button
+              type="button"
+              (click)="showPassword = !showPassword"
+            >
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+
+          @if (authMessage) {
+            <div class="auth-message">
+              {{ authMessage }}
+            </div>
+          }
+
+          <button
+            type="submit"
+            class="auth-submit"
+            [disabled]="authLoading"
+          >
+            @if (authLoading) {
+              Please wait...
+            } @else {
+              {{ authMode === 'login' ? 'Login' : 'Create Account' }}
+              →
+            }
+          </button>
+        </form>
+
+        <div class="auth-switch">
+          @if (authMode === 'login') {
+            <span>Don't have an account?</span>
+
+            <button type="button" (click)="switchAuthMode()">
+              Register
+            </button>
+          } @else {
+            <span>Already have an account?</span>
+
+            <button type="button" (click)="switchAuthMode()">
+              Login
+            </button>
+          }
+        </div>
+
+        <p class="auth-terms">
+          By continuing, you agree to our Terms & Privacy Policy.
+        </p>
+      </div>
+    </div>
+  }
